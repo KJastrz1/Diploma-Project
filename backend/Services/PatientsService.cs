@@ -18,7 +18,7 @@ public class PatientsService : IPatientsService
 
     public async Task<Patient> CreatePatientAsync(CreatePatientRequest request)
     {
-        var patient = _mapper.Map<Patient>(request);
+        Patient patient = _mapper.Map<Patient>(request);
         _context.Patients.Add(patient);
         await _context.SaveChangesAsync();
         return patient;

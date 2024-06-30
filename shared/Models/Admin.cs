@@ -1,16 +1,54 @@
-public class Admin : UserBase
-{
-    public DateTime DateAssigned { get; set; }
-    public Guid AssignedByAdminId { get; set; }
-    public DateTime? LastLogin { get; set; }
-    public bool IsActive { get; set; }
 
-    public Admin(string name, string surname, string email, UserRole role, DateTime dateAssigned, Guid assignedByAdminId)
-        : base(name, surname, email, role)
-    {
-        DateAssigned = dateAssigned;
-        AssignedByAdminId = assignedByAdminId;
-        LastLogin = null;
-        IsActive = true;
-    }
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+
+namespace Shared.Models;
+
+public class Admin : UserBase, IEntityTypeConfiguration<Admin>
+{
+       public DateTime DateAssigned { get; set; }
+       public Admin? AssignedBy { get; set; }
+       public Guid AssignedByAdminId { get; set; }
+       public DateTime? LastLogin { get; set; }
+       public bool IsActive { get; set; }
+
+       public Admin()
+       {
+              Role = UserRole.Admin;
+       }
+
+       public void Configure(EntityTypeBuilder<Admin> builder)
+       {
+              builder.HasKey(a => a.Id);
+
+              builder.Property(a => a.Name)
+                     .IsRequired()
+                     .HasMaxLength(100);
+
+              builder.Property(a => a.Surname)
+                     .IsRequired()
+                     .HasMaxLength(100);
+
+              builder.Property(a => a.Email)
+                     .IsRequired()
+                     .HasMaxLength(100);
+
+              builder.Property(a => a.Role)
+                     .IsRequired()
+                     .HasConversion<string>();
+
+              builder.Property(a => a.DateAssigned)
+                     .IsRequired();
+
+              builder.HasOne(a => a.AssignedBy)
+                     .WithMany()
+                     .HasForeignKey(a => a.AssignedByAdminId);
+
+              builder.Property(a => a.LastLogin);
+
+              builder.Property(a => a.IsActive)
+                     .IsRequired();
+
+
+       }
 }

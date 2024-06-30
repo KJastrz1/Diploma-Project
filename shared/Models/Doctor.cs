@@ -1,97 +1,71 @@
+using System;
+using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-public class Doctor : UserBase
+namespace Shared.Models;
+
+public class Doctor : UserBase, IEntityTypeConfiguration<Doctor>
 {
-    public string MedicalLicenseNumber { get; set; }
-    public string Specialty { get; set; }
-    public List<Availability> Availabilities { get; set; }
-    public List<Vacation> Vacations { get; set; }
-    public List<Appointment> Appointments { get; set; }
+       public string MedicalLicenseNumber { get; set; }
+       public string Specialty { get; set; }
+       public string OfficeNumber { get; set; }
+       public Clinic Clinic { get; set; }
+       public Guid ClinicId { get; set; }
+       public List<Availability> Availabilities { get; set; }
+       public List<Vacation> Vacations { get; set; }
+       public List<Appointment> Appointments { get; set; }
 
-    public Doctor(string name, string surname, string email, string medicalLicenseNumber, string specialty)
-        : base(name, surname, email, UserRole.Doctor)
-    {
-        MedicalLicenseNumber = medicalLicenseNumber;
-        Specialty = specialty;
-        Availabilities = new List<Availability>();
-        Vacations = new List<Vacation>();
-        Appointments = new List<Appointment>();
-    }
+       public Doctor()
+       {
+              Role = UserRole.Doctor;
+       }
 
-    public void AddAvailability(DayOfWeek day, TimeSpan startTime, TimeSpan endTime, TimeSpan visitDuration)
-    {
-        Availabilities.Add(new Availability(day, startTime, endTime, visitDuration));
-    }
+       public void Configure(EntityTypeBuilder<Doctor> builder)
+       {
+              builder.HasKey(d => d.Id);
 
-    public void AddVacation(DateTime startDate, DateTime endDate)
-    {
-        Vacations.Add(new Vacation(startDate, endDate));
-    }
+              builder.Property(a => a.Name)
+                   .IsRequired()
+                   .HasMaxLength(100);
 
-    public void AddAppointment(Appointment appointment)
-    {
-        Appointments.Add(appointment);
-    }
+              builder.Property(a => a.Surname)
+                   .IsRequired()
+                   .HasMaxLength(100);
 
-    public List<Availability> GetAvailabilityForWeek(DateTime startDate, DateTime endDate)
-    {
-        var result = new List<Availability>();
+              builder.Property(a => a.Email)
+                   .IsRequired()
+                   .HasMaxLength(100);
 
-        foreach (var availability in Availabilities)
-        {
-            var availabilityDate = GetNextDateForDay(startDate, availability.Day);
-            while (availabilityDate <= endDate)
-            {
-                if (!IsWithinVacation(availabilityDate, availability) && !IsAppointmentScheduled(availabilityDate, availability))
-                {
-                    result.Add(new Availability(
-                        availability.Day,
-                        availability.StartTime,
-                        availability.EndTime,
-                        availability.VisitDuration
-                    ));
-                }
-                availabilityDate = availabilityDate.AddDays(7);
-            }
-        }
+              builder.Property(a => a.Role)
+                   .IsRequired()
+                   .HasConversion<string>();
 
-        return result;
-    }
+              builder.Property(d => d.MedicalLicenseNumber)
+                     .IsRequired()
+                     .HasMaxLength(50);
 
-    private DateTime GetNextDateForDay(DateTime startDate, DayOfWeek day)
-    {
-        int daysToAdd = ((int)day - (int)startDate.DayOfWeek + 7) % 7;
-        return startDate.AddDays(daysToAdd);
-    }
+              builder.Property(d => d.Specialty)
+                     .IsRequired()
+                     .HasMaxLength(100);
 
-    private bool IsWithinVacation(DateTime date, Availability availability)
-    {
-        var availabilityStart = date.Date.Add(availability.StartTime);
-        var availabilityEnd = date.Date.Add(availability.EndTime);
+              builder.Property(d => d.OfficeNumber)
+                     .HasMaxLength(10);
 
-        foreach (var vacation in Vacations)
-        {
-            if (availabilityStart < vacation.EndDate && availabilityEnd > vacation.StartDate)
-            {
-                return true;
-            }
-        }
+              builder.HasOne(d => d.Clinic)
+                     .WithMany(c => c.Doctors)
+                     .HasForeignKey(d => d.ClinicId);
 
-        return false;
-    }
+              builder.HasMany(d => d.Availabilities)
+                     .WithOne(a => a.Doctor)
+                     .HasForeignKey(a => a.DoctorId);
 
-    private bool IsAppointmentScheduled(DateTime date, Availability availability)
-    {
-        var availabilityStart = date.Date.Add(availability.StartTime);
-        var availabilityEnd = date.Date.Add(availability.EndTime);
+              builder.HasMany(d => d.Vacations)
+                     .WithOne(v => v.Doctor)
+                     .HasForeignKey(v => v.DoctorId);
 
-        foreach (var appointment in Appointments)
-        {
-            if (appointment.AppointmentDate >= availabilityStart && appointment.AppointmentDate < availabilityEnd)
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
+              builder.HasMany(d => d.Appointments)
+                     .WithOne(a => a.Doctor)
+                     .HasForeignKey(a => a.DoctorId);
+       }
 }

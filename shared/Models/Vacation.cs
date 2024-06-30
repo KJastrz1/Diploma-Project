@@ -1,11 +1,47 @@
-public class Vacation
-{
-    public DateTime StartDate { get; set; }
-    public DateTime EndDate { get; set; }
+using System;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-    public Vacation(DateTime startDate, DateTime endDate)
-    {
-        StartDate = startDate;
-        EndDate = endDate;
-    }
+namespace Shared.Models;
+
+public class Vacation : IEntityTypeConfiguration<Vacation>
+{
+       public Guid Id { get; private set; }
+       public Doctor Doctor { get; set; }
+       public Guid DoctorId { get; set; }
+       public DateTime StartDate { get; set; }
+       public DateTime EndDate { get; set; }
+       public DateTime CreatedAt { get; set; }
+       public bool IsApproved { get; set; }
+       public bool IsDenied { get; set; }
+
+       public Vacation()
+       {
+              CreatedAt = DateTime.Now;
+       }
+
+
+       public void Configure(EntityTypeBuilder<Vacation> builder)
+       {
+              builder.HasKey(v => v.Id);
+
+              builder.Property(v => v.CreatedAt)
+                     .IsRequired();
+
+              builder.Property(v => v.IsApproved)
+                     .IsRequired();
+
+              builder.Property(v => v.IsDenied)
+                     .IsRequired();
+
+              builder.Property(v => v.StartDate)
+                     .IsRequired();
+
+              builder.Property(v => v.EndDate)
+                     .IsRequired();
+
+              builder.HasOne(v => v.Doctor)
+                     .WithMany(d => d.Vacations)
+                     .HasForeignKey(v => v.DoctorId);
+       }
 }

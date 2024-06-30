@@ -1,9 +1,11 @@
 using Microsoft.EntityFrameworkCore;
+using Shared.Models;
 
+namespace Backend.Data;
 
-public class ClinicManagementContext : DbContext
+public class ClinicDataContext : DbContext
 {
-    public ClinicManagementContext(DbContextOptions<ClinicManagementContext> options)
+    public ClinicDataContext(DbContextOptions<ClinicDataContext> options)
         : base(options)
     {
     }
@@ -70,7 +72,7 @@ public class ClinicManagementContext : DbContext
             .HasOne(v => v.Doctor)
             .WithMany(d => d.Vacations)
             .HasForeignKey(v => v.DoctorId);
-  
+
         modelBuilder.Entity<Availability>()
             .HasKey(a => a.Id);
 
@@ -82,7 +84,7 @@ public class ClinicManagementContext : DbContext
 
         modelBuilder.Entity<Vacation>()
             .HasKey(v => v.Id);
-    
+
         modelBuilder.Entity<Doctor>()
             .Property(d => d.MedicalLicenseNumber)
             .IsRequired()
@@ -122,7 +124,14 @@ public class ClinicManagementContext : DbContext
             .Property(p => p.PESEL)
             .IsRequired()
             .HasMaxLength(11);
+
+        modelBuilder.Entity<Admin>()
+            .Property(a => a.DateAssigned)
+            .IsRequired();
+
+        modelBuilder.Entity<Admin>()
+            .HasOne(a => a.AssignedBy)
+            .WithMany()
+            .HasForeignKey(a => a.AssignedByAdminId);
     }
-
 }
-

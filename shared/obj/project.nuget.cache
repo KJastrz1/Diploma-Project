@@ -1,8 +1,14 @@
 {
   "version": 2,
-  "dgSpecHash": "JYmUnRcPcJVdToB/ArflH/Rh7jfBpy68w6ZktHf+Pv81qkYhYPkphMBWtK2YYNCFMaw4AAeRKGKnZeS2BYt7Gg==",
+  "dgSpecHash": "uPT4zeQvpsb2A798Y0mkx52Z6Ur4wEwaRgUYYpxMfN8pys2/7tY/xwDEnYFr3knfZcU32V/EokL9QzdlmgHDXg==",
   "success": true,
   "projectFilePath": "C:\\Users\\kris102\\Desktop\\sem6\\projekt_inzynierski\\shared\\shared.csproj",
-  "expectedPackageFiles": [],
+  "expectedPackageFiles": [
+    "C:\\Users\\kris102\\.nuget\\packages\\automapper\\13.0.1\\automapper.13.0.1.nupkg.sha512",
+    "C:\\Users\\kris102\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\6.0.0\\microsoft.extensions.dependencyinjection.abstractions.6.0.0.nupkg.sha512",
+    "C:\\Users\\kris102\\.nuget\\packages\\microsoft.extensions.options\\6.0.0\\microsoft.extensions.options.6.0.0.nupkg.sha512",
+    "C:\\Users\\kris102\\.nuget\\packages\\microsoft.extensions.primitives\\6.0.0\\microsoft.extensions.primitives.6.0.0.nupkg.sha512",
+    "C:\\Users\\kris102\\.nuget\\packages\\system.runtime.compilerservices.unsafe\\6.0.0\\system.runtime.compilerservices.unsafe.6.0.0.nupkg.sha512"
+  ],
   "logs": []
 }

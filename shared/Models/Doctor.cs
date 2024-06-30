@@ -1,30 +1,26 @@
+namespace Shared.Models;
 
 public class Doctor : UserBase
 {
     public string MedicalLicenseNumber { get; set; }
     public string Specialty { get; set; }
+    public string OfficeNumber { get; set; }
+    public Clinic Clinic { get; set; }
+    public Guid ClinicId { get; set; }
     public List<Availability> Availabilities { get; set; }
     public List<Vacation> Vacations { get; set; }
     public List<Appointment> Appointments { get; set; }
 
-    public Doctor(string name, string surname, string email, string medicalLicenseNumber, string specialty)
-        : base(name, surname, email, UserRole.Doctor)
-    {
-        MedicalLicenseNumber = medicalLicenseNumber;
-        Specialty = specialty;
-        Availabilities = new List<Availability>();
-        Vacations = new List<Vacation>();
-        Appointments = new List<Appointment>();
-    }
+
 
     public void AddAvailability(DayOfWeek day, TimeSpan startTime, TimeSpan endTime, TimeSpan visitDuration)
     {
-        Availabilities.Add(new Availability(day, startTime, endTime, visitDuration));
+        Availabilities.Add(new Availability(this, day, startTime, endTime, visitDuration));
     }
 
     public void AddVacation(DateTime startDate, DateTime endDate)
     {
-        Vacations.Add(new Vacation(startDate, endDate));
+        Vacations.Add(new Vacation(this, startDate, endDate));
     }
 
     public void AddAppointment(Appointment appointment)
@@ -44,6 +40,7 @@ public class Doctor : UserBase
                 if (!IsWithinVacation(availabilityDate, availability) && !IsAppointmentScheduled(availabilityDate, availability))
                 {
                     result.Add(new Availability(
+                        this,
                         availability.Day,
                         availability.StartTime,
                         availability.EndTime,

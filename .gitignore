@@ -1,5 +1,9 @@
-
+**/obj/
+**/bin/
 *.docx
+
+**/appsettings.Development.json
+
 # Ignore Visual Studio temporary files, build results, and
 # other redundant project files
 #############

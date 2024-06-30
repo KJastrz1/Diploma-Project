@@ -1,19 +1,32 @@
-public class Appointment
+namespace Shared.Models
 {
-    public Guid Id { get; private set; }
-    public Clinic Clinic { get; set; }
-    public Doctor Doctor { get; set; }
-    public Patient Patient { get; set; }
-    public DateTime AppointmentDate { get; set; }
-    public string Notes { get; set; }
-
-    public Appointment(Clinic clinic, Doctor doctor, Patient patient, DateTime appointmentDate, string notes)
+    public class Appointment
     {
-        Id = Guid.NewGuid();
-        Clinic = clinic;
-        Doctor = doctor;
-        Patient = patient;
-        AppointmentDate = appointmentDate;
-        Notes = notes;
+        public Guid Id { get; private set; }
+        public Guid ClinicId { get; set; }
+        public Clinic Clinic { get; set; }
+        public Guid DoctorId { get; set; }
+        public Doctor Doctor { get; set; }
+        public Guid PatientId { get; set; }
+        public Patient Patient { get; set; }
+        public DateTime AppointmentDate { get; set; }
+        public string? Notes { get; set; }
+
+  
+        public Appointment()
+        {
+            Id = Guid.NewGuid();
+        }
+
+        
+        public Appointment(Guid clinicId, Guid doctorId, Guid patientId, DateTime appointmentDate, string? notes)
+        {
+            Id = Guid.NewGuid();
+            ClinicId = clinicId;
+            DoctorId = doctorId;
+            PatientId = patientId;
+            AppointmentDate = appointmentDate;
+            Notes = notes;
+        }
     }
 }

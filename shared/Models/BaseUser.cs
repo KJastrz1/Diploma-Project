@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 
+namespace Shared.Models;
 public abstract class UserBase
 {
     public Guid Id { get; private set; }
@@ -9,14 +10,7 @@ public abstract class UserBase
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public UserRole Role { get; set; }
 
-    public UserBase(string name, string surname, string email, UserRole role)
-    {
-        Id = Guid.NewGuid();
-        Name = name;
-        Surname = surname;
-        Email = email;
-        Role = role;
-    }
 
     public string FullName => $"{Name} {Surname}";
 }
+

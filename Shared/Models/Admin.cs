@@ -1,4 +1,3 @@
-
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -6,7 +5,6 @@ namespace Shared.Models;
 
 public class Admin : UserBase, IEntityTypeConfiguration<Admin>
 {
-       public DateTime DateAssigned { get; set; }
        public Admin? AssignedBy { get; set; }
        public Guid AssignedByAdminId { get; set; }
        public DateTime? LastLogin { get; set; }
@@ -33,12 +31,12 @@ public class Admin : UserBase, IEntityTypeConfiguration<Admin>
                      .IsRequired()
                      .HasMaxLength(100);
 
+              builder.Property(a => a.CreatedAt)
+                     .IsRequired();
+
               builder.Property(a => a.Role)
                      .IsRequired()
                      .HasConversion<string>();
-
-              builder.Property(a => a.DateAssigned)
-                     .IsRequired();
 
               builder.HasOne(a => a.AssignedBy)
                      .WithMany()

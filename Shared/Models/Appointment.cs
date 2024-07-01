@@ -13,7 +13,7 @@ public class Appointment : IEntityTypeConfiguration<Appointment>
        public Guid PatientId { get; set; }
        public Patient Patient { get; set; }
        public DateTime AppointmentDate { get; set; }
-       public DateTime CreatedAt { get; set; } = DateTime.Now;
+       public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
        public string? Notes { get; set; }
 
 
@@ -25,7 +25,8 @@ public class Appointment : IEntityTypeConfiguration<Appointment>
               builder.Property(a => a.AppointmentDate)
                      .IsRequired();
 
-              builder.Property(a => a.CreatedAt);
+              builder.Property(a => a.CreatedAt)
+                     .IsRequired();
 
               builder.Property(a => a.Notes)
                      .HasMaxLength(1000);

@@ -1,12 +1,9 @@
-using System;
-using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Shared.Models;
-
 public class Patient : UserBase, IEntityTypeConfiguration<Patient>
-{     
+{
        public string PhoneNumber { get; set; }
        public string PESEL { get; set; }
        public DateTime DateOfBirth { get; set; }
@@ -23,8 +20,8 @@ public class Patient : UserBase, IEntityTypeConfiguration<Patient>
               builder.HasKey(p => p.Id);
 
               builder.Property(a => a.Name)
-                   .IsRequired()
-                   .HasMaxLength(100);
+                     .IsRequired()
+                     .HasMaxLength(100);
 
               builder.Property(a => a.Surname)
                      .IsRequired()
@@ -33,6 +30,9 @@ public class Patient : UserBase, IEntityTypeConfiguration<Patient>
               builder.Property(a => a.Email)
                      .IsRequired()
                      .HasMaxLength(100);
+
+              builder.Property(a => a.CreatedAt)
+                     .IsRequired();
 
               builder.Property(a => a.Role)
                      .IsRequired()
@@ -48,6 +48,7 @@ public class Patient : UserBase, IEntityTypeConfiguration<Patient>
 
               builder.Property(p => p.DateOfBirth)
                      .IsRequired();
+
 
               builder.HasMany(p => p.Documents)
                      .WithOne(d => d.Patient)

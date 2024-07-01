@@ -22,7 +22,7 @@ public class ClinicDataContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-        
+
         modelBuilder.ApplyConfiguration(new Admin());
         modelBuilder.ApplyConfiguration(new Doctor());
         modelBuilder.ApplyConfiguration(new Patient());
@@ -31,5 +31,6 @@ public class ClinicDataContext : DbContext
         modelBuilder.ApplyConfiguration(new Availability());
         modelBuilder.ApplyConfiguration(new PatientDocument());
         modelBuilder.ApplyConfiguration(new Vacation());
+      
     }
 }

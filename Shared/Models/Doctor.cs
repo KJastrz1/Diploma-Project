@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -36,6 +34,9 @@ public class Doctor : UserBase, IEntityTypeConfiguration<Doctor>
               builder.Property(a => a.Email)
                    .IsRequired()
                    .HasMaxLength(100);
+
+              builder.Property(a => a.CreatedAt)
+                     .IsRequired();
 
               builder.Property(a => a.Role)
                    .IsRequired()

@@ -1,7 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-
 namespace Shared.Models;
 public class Patient : UserBase, IEntityTypeConfiguration<Patient>
 {

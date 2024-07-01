@@ -10,7 +10,7 @@ public class PatientDocument : IEntityTypeConfiguration<PatientDocument>
        public Guid PatientId { get; set; }
        public string FileName { get; set; }
        public byte[] FileContent { get; set; }
-       public DateTime UploadDate { get; set; } = DateTime.Now;
+       public DateTime UploadDate { get; set; } = DateTime.UtcNow;
 
        public void Configure(EntityTypeBuilder<PatientDocument> builder)
        {

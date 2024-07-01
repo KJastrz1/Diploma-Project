@@ -10,7 +10,7 @@ public class Vacation : IEntityTypeConfiguration<Vacation>
        public Guid DoctorId { get; set; }
        public DateTime StartDate { get; set; }
        public DateTime EndDate { get; set; }
-       public DateTime CreatedAt { get; set; } = DateTime.Now;
+       public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
        public bool IsApproved { get; set; }
        public bool IsDenied { get; set; }
 

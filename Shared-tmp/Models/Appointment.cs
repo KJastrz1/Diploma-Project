@@ -13,13 +13,10 @@ public class Appointment : IEntityTypeConfiguration<Appointment>
        public Guid PatientId { get; set; }
        public Patient Patient { get; set; }
        public DateTime AppointmentDate { get; set; }
-       public DateTime CreatedAt { get; set; }
+       public DateTime CreatedAt { get; set; } = DateTime.Now;
        public string? Notes { get; set; }
 
-       public Appointment()
-       {
-              CreatedAt = DateTime.Now;
-       }
+
 
        public void Configure(EntityTypeBuilder<Appointment> builder)
        {

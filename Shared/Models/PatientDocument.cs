@@ -1,4 +1,3 @@
-using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -11,7 +10,7 @@ public class PatientDocument : IEntityTypeConfiguration<PatientDocument>
        public Guid PatientId { get; set; }
        public string FileName { get; set; }
        public byte[] FileContent { get; set; }
-       public DateTime UploadDate { get; set; }
+       public DateTime UploadDate { get; set; } = DateTime.Now;
 
        public void Configure(EntityTypeBuilder<PatientDocument> builder)
        {

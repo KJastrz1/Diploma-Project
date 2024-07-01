@@ -25,7 +25,8 @@ public class Appointment : IEntityTypeConfiguration<Appointment>
               builder.Property(a => a.AppointmentDate)
                      .IsRequired();
 
-              builder.Property(a => a.CreatedAt);
+              builder.Property(a => a.CreatedAt)
+                     .IsRequired();
 
               builder.Property(a => a.Notes)
                      .HasMaxLength(1000);

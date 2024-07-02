@@ -19,6 +19,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<IPatientsService, PatientsService>();
+builder.Services.AddScoped<IDoctorsService, DoctorsService>();
 
 
 var app = builder.Build();

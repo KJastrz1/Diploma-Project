@@ -8,91 +8,89 @@ using Shared.Responses;
 using Shared.Responses.Patient;
 using System.Threading.Tasks;
 
-namespace Backend.Services
+namespace Backend.Services;
+public class PatientsService : IPatientsService
 {
-    public class PatientsService : IPatientsService
+    private readonly ClinicDataContext _context;
+    private readonly IMapper _mapper;
+
+    public PatientsService(ClinicDataContext context, IMapper mapper)
     {
-        private readonly ClinicDataContext _context;
-        private readonly IMapper _mapper;
+        _context = context;
+        _mapper = mapper;
+    }
 
-        public PatientsService(ClinicDataContext context, IMapper mapper)
+    public async Task<PagedResult<GetPatientResponse>> GetPatientsAsync(PatientFilter filter, int pageNumber, int pageSize)
+    {
+        var query = _context.Patients.AsQueryable()
+            .ApplyFilter(filter);
+
+        var totalCount = await query.CountAsync();
+        var items = await query
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+        var mappedItems = _mapper.Map<List<GetPatientResponse>>(items);
+
+        return new PagedResult<GetPatientResponse>
         {
-            _context = context;
-            _mapper = mapper;
+            Items = mappedItems,
+            TotalCount = totalCount,
+            PageSize = pageSize,
+            CurrentPage = pageNumber
+        };
+    }
+
+    public async Task<GetPatientResponse?> GetPatientByIdAsync(Guid id)
+    {
+        var patient = await _context.Patients.FindAsync(id);
+        if (patient == null)
+        {
+            return null;
+        }
+        GetPatientResponse response = _mapper.Map<GetPatientResponse>(patient);
+        return response;
+    }
+
+    public async Task<GetPatientResponse> CreatePatientAsync(CreatePatientRequest request)
+    {
+        Patient patient = _mapper.Map<Patient>(request);
+
+        _context.Patients.Add(patient);
+        await _context.SaveChangesAsync();
+        GetPatientResponse response = _mapper.Map<GetPatientResponse>(patient);
+        return response;
+    }
+
+    public async Task<GetPatientResponse> UpdatePatientAsync(Guid id, UpdatePatientRequest request)
+    {
+        var patient = await _context.Patients.FindAsync(id);
+        if (patient == null)
+        {
+            return null;
         }
 
-        public async Task<PagedResult<GetPatientResponse>> GetPatientsAsync(int pageNumber, int pageSize, PatientFilter filter)
+        _mapper.Map(request, patient);
+
+        _context.Patients.Update(patient);
+        await _context.SaveChangesAsync();
+
+        GetPatientResponse response = _mapper.Map<GetPatientResponse>(patient);
+
+        return response;
+    }
+
+    public async Task<bool> DeletePatientAsync(Guid id)
+    {
+        var patient = await _context.Patients.FindAsync(id);
+        if (patient == null)
         {
-            var query = _context.Patients.AsQueryable()
-                .ApplyFilter(filter);
-
-            var totalCount = await query.CountAsync();
-            var items = await query
-                .Skip((pageNumber - 1) * pageSize)
-                .Take(pageSize)
-                .ToListAsync();
-            var mappedItems = _mapper.Map<List<GetPatientResponse>>(items);
-
-            return new PagedResult<GetPatientResponse>
-            {
-                Items = mappedItems,
-                TotalCount = totalCount,
-                PageSize = pageSize,
-                CurrentPage = pageNumber
-            };
+            return false;
         }
 
-        public async Task<GetPatientResponse?> GetPatientByIdAsync(Guid id)
-        {
-            var patient = await _context.Patients.FindAsync(id);
-            if (patient == null)
-            {
-                return null;
-            }
-            GetPatientResponse response = _mapper.Map<GetPatientResponse>(patient);
-            return response;
-        }
+        _context.Patients.Remove(patient);
+        await _context.SaveChangesAsync();
 
-        public async Task<GetPatientResponse> CreatePatientAsync(CreatePatientRequest request)
-        {
-            Patient patient = _mapper.Map<Patient>(request);
-
-            _context.Patients.Add(patient);
-            await _context.SaveChangesAsync();
-            GetPatientResponse response = _mapper.Map<GetPatientResponse>(patient);
-            return response;
-        }
-
-        public async Task<GetPatientResponse> UpdatePatientAsync(Guid id, UpdatePatientRequest request)
-        {
-            var patient = await _context.Patients.FindAsync(id);
-            if (patient == null)
-            {
-                return null;
-            }
-
-            _mapper.Map(request, patient);
-
-            _context.Patients.Update(patient);
-            await _context.SaveChangesAsync();
-
-            GetPatientResponse response = _mapper.Map<GetPatientResponse>(patient);
-
-            return response;
-        }
-
-        public async Task<bool> DeletePatientAsync(Guid id)
-        {
-            var patient = await _context.Patients.FindAsync(id);
-            if (patient == null)
-            {
-                return false;
-            }
-
-            _context.Patients.Remove(patient);
-            await _context.SaveChangesAsync();
-
-            return true;
-        }
+        return true;
     }
 }

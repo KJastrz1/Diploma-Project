@@ -1,6 +1,4 @@
 using Shared.Models;
-using System.Text.Json.Serialization;
-
 
 namespace Shared.Responses.Patient;
 public class GetPatientResponse

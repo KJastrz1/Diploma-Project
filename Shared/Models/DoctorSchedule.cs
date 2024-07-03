@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Shared.Models;
 
-public class Availability : IEntityTypeConfiguration<Availability>
+public class DoctorSchedule : IEntityTypeConfiguration<DoctorSchedule>
 {
        public Guid Id { get; set; }
        public Doctor Doctor { get; set; }
@@ -13,7 +13,7 @@ public class Availability : IEntityTypeConfiguration<Availability>
        public TimeSpan EndTime { get; set; }
        public TimeSpan VisitDuration { get; set; }
 
-       public void Configure(EntityTypeBuilder<Availability> builder)
+       public void Configure(EntityTypeBuilder<DoctorSchedule> builder)
        {
               builder.HasKey(a => a.Id);
 
@@ -30,7 +30,7 @@ public class Availability : IEntityTypeConfiguration<Availability>
                      .IsRequired();
 
               builder.HasOne(a => a.Doctor)
-                     .WithMany(d => d.Availabilities)
+                     .WithMany(d => d.DoctorSchedules)
                      .HasForeignKey(a => a.DoctorId);
        }
 }

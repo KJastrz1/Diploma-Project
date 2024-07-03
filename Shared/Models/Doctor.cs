@@ -10,7 +10,7 @@ public class Doctor : UserBase, IEntityTypeConfiguration<Doctor>
        public string OfficeNumber { get; set; }
        public Clinic Clinic { get; set; }
        public Guid ClinicId { get; set; }
-       public List<Availability> Availabilities { get; set; }
+       public List<DoctorSchedule> DoctorSchedules { get; set; }
        public List<Vacation> Vacations { get; set; }
        public List<Appointment> Appointments { get; set; }
 
@@ -57,7 +57,7 @@ public class Doctor : UserBase, IEntityTypeConfiguration<Doctor>
                      .WithMany(c => c.Doctors)
                      .HasForeignKey(d => d.ClinicId);
 
-              builder.HasMany(d => d.Availabilities)
+              builder.HasMany(d => d.DoctorSchedules)
                      .WithOne(a => a.Doctor)
                      .HasForeignKey(a => a.DoctorId);
 

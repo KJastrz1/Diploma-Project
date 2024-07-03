@@ -16,7 +16,7 @@ public class ClinicDataContext : DbContext
     public DbSet<Appointment> Appointments { get; set; }
     public DbSet<Clinic> Clinics { get; set; }
     public DbSet<PatientDocument> PatientDocuments { get; set; }
-    public DbSet<Availability> Availabilities { get; set; }
+    public DbSet<DoctorSchedule> DoctorSchedules { get; set; }
     public DbSet<Vacation> Vacations { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -28,7 +28,7 @@ public class ClinicDataContext : DbContext
         modelBuilder.ApplyConfiguration(new Patient());
         modelBuilder.ApplyConfiguration(new Clinic());
         modelBuilder.ApplyConfiguration(new Appointment());
-        modelBuilder.ApplyConfiguration(new Availability());
+        modelBuilder.ApplyConfiguration(new DoctorSchedule());
         modelBuilder.ApplyConfiguration(new PatientDocument());
         modelBuilder.ApplyConfiguration(new Vacation());
       

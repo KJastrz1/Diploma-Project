@@ -4,11 +4,19 @@ using Backend.Utils;
 using Microsoft.EntityFrameworkCore;
 using Shared.Models;
 using Shared.Requests.Doctor;
-using Shared.Responses;
 using Shared.Responses.Doctor;
-using System.Threading.Tasks;
+
 
 namespace Backend.Services;
+public interface IDoctorsService
+{
+    Task<PagedResult<GetDoctorResponse>> GetDoctorsAsync(DoctorFilter filter, int pageNumber, int pageSize);
+    Task<GetDoctorResponse?> GetDoctorByIdAsync(Guid id);
+    Task<GetDoctorResponse> CreateDoctorAsync(CreateDoctorRequest request);
+    Task<GetDoctorResponse> UpdateDoctorAsync(Guid id, UpdateDoctorRequest request);
+    Task<bool> DeleteDoctorAsync(Guid id);
+}
+
 public class DoctorsService : IDoctorsService
 {
     private readonly ClinicDataContext _context;

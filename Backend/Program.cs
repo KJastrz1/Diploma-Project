@@ -3,6 +3,8 @@ using Shared.Mappers;
 using Backend.Data;
 using Backend.Services;
 using System.Text.Json.Serialization;
+using Backend.Utils;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,12 +16,18 @@ builder.Services.AddDbContext<ClinicDataContext>(options =>
 builder.Services.AddControllers().AddJsonOptions(options =>
 {
     options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+
 });
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SchemaFilter<TimeSpanSchemaFilter>();
+});
 
 builder.Services.AddScoped<IPatientsService, PatientsService>();
 builder.Services.AddScoped<IDoctorsService, DoctorsService>();
+builder.Services.AddScoped<IClinicsService, ClinicsService>();
+builder.Services.AddScoped<IDoctorSchedulesService, DoctorSchedulesService>();
 
 
 var app = builder.Build();

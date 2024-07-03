@@ -3,6 +3,7 @@ using System;
 using Backend.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Backend.Migrations
 {
     [DbContext(typeof(ClinicDataContext))]
-    partial class ClinicDataContextModelSnapshot : ModelSnapshot
+    [Migration("20240703124616_ClinicNameOptional")]
+    partial class ClinicNameOptional
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -102,6 +105,34 @@ namespace Backend.Migrations
                     b.ToTable("Appointments");
                 });
 
+            modelBuilder.Entity("Shared.Models.Availability", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Day")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("DoctorId")
+                        .HasColumnType("uuid");
+
+                    b.Property<TimeSpan>("EndTime")
+                        .HasColumnType("interval");
+
+                    b.Property<TimeSpan>("StartTime")
+                        .HasColumnType("interval");
+
+                    b.Property<TimeSpan>("VisitDuration")
+                        .HasColumnType("interval");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DoctorId");
+
+                    b.ToTable("Availabilities");
+                });
+
             modelBuilder.Entity("Shared.Models.Clinic", b =>
                 {
                     b.Property<Guid>("Id")
@@ -178,34 +209,6 @@ namespace Backend.Migrations
                     b.HasIndex("ClinicId");
 
                     b.ToTable("Doctors");
-                });
-
-            modelBuilder.Entity("Shared.Models.DoctorSchedule", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<int>("Day")
-                        .HasColumnType("integer");
-
-                    b.Property<Guid>("DoctorId")
-                        .HasColumnType("uuid");
-
-                    b.Property<TimeSpan>("EndTime")
-                        .HasColumnType("interval");
-
-                    b.Property<TimeSpan>("StartTime")
-                        .HasColumnType("interval");
-
-                    b.Property<TimeSpan>("VisitDuration")
-                        .HasColumnType("interval");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DoctorId");
-
-                    b.ToTable("Availabilities");
                 });
 
             modelBuilder.Entity("Shared.Models.Patient", b =>
@@ -351,6 +354,17 @@ namespace Backend.Migrations
                     b.Navigation("Patient");
                 });
 
+            modelBuilder.Entity("Shared.Models.Availability", b =>
+                {
+                    b.HasOne("Shared.Models.Doctor", "Doctor")
+                        .WithMany("Availabilities")
+                        .HasForeignKey("DoctorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Doctor");
+                });
+
             modelBuilder.Entity("Shared.Models.Doctor", b =>
                 {
                     b.HasOne("Shared.Models.Clinic", "Clinic")
@@ -360,17 +374,6 @@ namespace Backend.Migrations
                         .IsRequired();
 
                     b.Navigation("Clinic");
-                });
-
-            modelBuilder.Entity("Shared.Models.DoctorSchedule", b =>
-                {
-                    b.HasOne("Shared.Models.Doctor", "Doctor")
-                        .WithMany("DoctorSchedules")
-                        .HasForeignKey("DoctorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Doctor");
                 });
 
             modelBuilder.Entity("Shared.Models.PatientDocument", b =>
@@ -406,7 +409,7 @@ namespace Backend.Migrations
                 {
                     b.Navigation("Appointments");
 
-                    b.Navigation("DoctorSchedules");
+                    b.Navigation("Availabilities");
 
                     b.Navigation("Vacations");
                 });

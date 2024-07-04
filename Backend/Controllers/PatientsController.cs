@@ -16,7 +16,7 @@ public class PatientsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetPatients([FromQuery] PatientFilter filter, int pageNumber = 1, int pageSize = 10)
+    public async Task<IActionResult> GetPatients([FromQuery] PatientFilter filter, int pageNumber = 1, int pageSize = 20)
     {
         try
         {

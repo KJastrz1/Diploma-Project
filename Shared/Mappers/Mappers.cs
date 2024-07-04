@@ -8,6 +8,8 @@ using Shared.Requests.Clinic;
 using Shared.Responses.Clinic;
 using Shared.Requests.DoctorSchedule;
 using Shared.Responses.DoctorSchedule;
+using Shared.Requests.Appointment;
+using Shared.Responses.Appointment;
 
 namespace Shared.Mappers;
 public class Mappers : Profile
@@ -33,6 +35,14 @@ public class Mappers : Profile
         CreateMap<UpdateDoctorScheduleRequest, DoctorSchedule>()
             .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
         CreateMap<DoctorSchedule, GetDoctorScheduleResponse>();
+
+        CreateMap<CreateAppointmentRequest, Appointment>();
+        CreateMap<UpdateAppointmentRequest, Appointment>()
+            .ForAllMembers(opts => opts.Condition((src, dest, srcMember) => srcMember != null));
+        CreateMap<Appointment, GetAppointmentResponse>()
+            .ForMember(dest => dest.Clinic, opt => opt.MapFrom(src => src.Clinic))
+            .ForMember(dest => dest.Doctor, opt => opt.MapFrom(src => src.Doctor))
+            .ForMember(dest => dest.Patient, opt => opt.MapFrom(src => src.Patient));
 
 
     }

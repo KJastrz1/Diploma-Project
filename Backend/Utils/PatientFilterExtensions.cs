@@ -3,7 +3,6 @@ using Shared.Models;
 using Shared.Requests.Patient;
 
 namespace Backend.Utils;
-
 public static class PatientFilterExtensions
 {
     public static IQueryable<Patient> ApplyFilter(this IQueryable<Patient> query, PatientFilter filter)
@@ -11,29 +10,34 @@ public static class PatientFilterExtensions
         if (filter == null)
             return query;
 
-        foreach (var property in typeof(PatientFilter).GetProperties())
+        if (!string.IsNullOrEmpty(filter.Name))
         {
-            var value = property.GetValue(filter);
-            if (value == null || (property.PropertyType == typeof(string) && string.IsNullOrEmpty(value as string)))
-                continue;
+            query = query.Where(p => p.Name.Contains(filter.Name));
+        }
 
-            var parameter = Expression.Parameter(typeof(Patient), "p");
-            var propertyAccess = Expression.Property(parameter, property.Name);
-            var constant = Expression.Constant(value);
+        if (!string.IsNullOrEmpty(filter.Surname))
+        {
+            query = query.Where(p => p.Surname.Contains(filter.Surname));
+        }
 
-            Expression condition;
-            if (property.PropertyType == typeof(string))
-            {
-                var containsMethod = typeof(string).GetMethod("Contains", new[] { typeof(string) });
-                condition = Expression.Call(propertyAccess, containsMethod, constant);
-            }
-            else
-            {
-                condition = Expression.Equal(propertyAccess, constant);
-            }
+        if (!string.IsNullOrEmpty(filter.Email))
+        {
+            query = query.Where(p => p.Email.Contains(filter.Email));
+        }
 
-            var lambda = Expression.Lambda<Func<Patient, bool>>(condition, parameter);
-            query = query.Where(lambda);
+        if (!string.IsNullOrEmpty(filter.PhoneNumber))
+        {
+            query = query.Where(p => p.PhoneNumber.Contains(filter.PhoneNumber));
+        }
+
+        if (!string.IsNullOrEmpty(filter.PESEL))
+        {
+            query = query.Where(p => p.PESEL.Contains(filter.PESEL));
+        }
+
+        if (filter.DateOfBirth.HasValue)
+        {
+            query = query.Where(p => p.DateOfBirth == filter.DateOfBirth);
         }
 
         return query;

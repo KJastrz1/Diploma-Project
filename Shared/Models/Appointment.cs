@@ -13,6 +13,7 @@ public class Appointment : IEntityTypeConfiguration<Appointment>
        public Guid PatientId { get; set; }
        public Patient Patient { get; set; }
        public DateTime AppointmentDate { get; set; }
+       public DateTime EndDate { get; set; }
        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
        public string? Notes { get; set; }
 
@@ -23,6 +24,9 @@ public class Appointment : IEntityTypeConfiguration<Appointment>
               builder.HasKey(a => a.Id);
 
               builder.Property(a => a.AppointmentDate)
+                     .IsRequired();
+
+              builder.Property(a => a.EndDate)
                      .IsRequired();
 
               builder.Property(a => a.CreatedAt)

@@ -16,7 +16,7 @@ public class DoctorSchedulesController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetDoctorSchedules([FromQuery] DoctorScheduleFilter filter, int pageNumber = 1, int pageSize = 10)
+    public async Task<IActionResult> GetDoctorSchedules([FromQuery] DoctorScheduleFilter filter, int pageNumber = 1, int pageSize = 20)
     {
         try
         {
@@ -63,7 +63,7 @@ public class DoctorSchedulesController : ControllerBase
         {
             if (ex.Message.Contains("Specified doctor does not exist"))
             {
-                return BadRequest(new { error = "The specified doctor does not exist." });
+                return BadRequest(new { error = "Specified doctor does not exist." });
             }
             return StatusCode(500, new { error = "An error occurred while creating the doctor schedule. Please try again later." });
         }
@@ -89,7 +89,7 @@ public class DoctorSchedulesController : ControllerBase
         {
             if (ex.Message.Contains("Specified doctor does not exist"))
             {
-                return BadRequest(new { error = "The specified doctor does not exist." });
+                return BadRequest(new { error = "Specified doctor does not exist." });
             }
             return StatusCode(500, new { error = "An error occurred while updating the doctor schedule. Please try again later." });
         }
@@ -111,6 +111,24 @@ public class DoctorSchedulesController : ControllerBase
         catch (Exception ex)
         {
             return StatusCode(500, new { error = "An error occurred while deleting the doctor schedule. Please try again later." });
+        }
+    }
+
+    [HttpGet("available-slots")]
+    public async Task<IActionResult> GetAvailableSlots([FromQuery] Guid doctorId, [FromQuery] DateTime startDate, [FromQuery] DateTime endDate)
+    {
+        try
+        {
+            var availableSlots = await _doctorSchedulesService.GetAvailableSlotsAsync(doctorId, startDate, endDate);
+            return Ok(availableSlots);
+        }
+        catch (Exception ex)
+        {
+            if (ex.Message.Contains("Specified doctor does not exist"))
+            {
+                return BadRequest(new { error = "Specified doctor does not exist." });
+            }
+            return StatusCode(500, new { error = "An error occurred while retrieving the available slots. Please try again later." });
         }
     }
 }

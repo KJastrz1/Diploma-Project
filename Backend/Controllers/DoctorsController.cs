@@ -16,7 +16,7 @@ public class DoctorsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetDoctors([FromQuery] DoctorFilter filter, int pageNumber = 1, int pageSize = 10)
+    public async Task<IActionResult> GetDoctors([FromQuery] DoctorFilter filter, int pageNumber = 1, int pageSize = 20)
     {
         try
         {
@@ -63,7 +63,7 @@ public class DoctorsController : ControllerBase
         {
             if (ex.Message.Contains("Specified clinic does not exist"))
             {
-                return BadRequest(new { error = "The specified clinic does not exist." });
+                return BadRequest(new { error = "Specified clinic does not exist." });
             }
             return StatusCode(500, new { error = "An error occurred while creating the doctor. Please try again later." });
         }
@@ -89,7 +89,7 @@ public class DoctorsController : ControllerBase
         {
             if (ex.Message.Contains("Specified clinic does not exist"))
             {
-                return BadRequest(new { error = "The specified clinic does not exist." });
+                return BadRequest(new { error = "Specified clinic does not exist." });
             }
             return StatusCode(500, new { error = "An error occurred while updating the doctor. Please try again later." });
         }
@@ -111,5 +111,5 @@ public class DoctorsController : ControllerBase
         {
             return StatusCode(500, new { error = "An error occurred while deleting the doctor. Please try again later." });
         }
-    }
+    }   
 }

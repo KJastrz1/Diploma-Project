@@ -1,4 +1,4 @@
-using Shared.Models;
+using Shared.Enums;
 
 namespace Shared.Responses.Doctor;
 

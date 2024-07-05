@@ -1,4 +1,4 @@
-namespace Shared.Models;
+namespace Shared.Helpers;
 public class PagedResult<T>
 {
     public List<T> Items { get; set; } = new List<T>();

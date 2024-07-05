@@ -1,5 +1,5 @@
 using System.Linq.Expressions;
-using Shared.Models;
+using Shared.Entities;
 using Shared.Requests.Clinic;
 
 namespace Backend.Utils;

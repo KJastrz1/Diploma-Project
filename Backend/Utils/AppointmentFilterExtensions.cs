@@ -1,4 +1,4 @@
-using Shared.Models;
+using Shared.Entities;
 using Shared.Requests.Appointment;
 
 namespace Backend.Utils;

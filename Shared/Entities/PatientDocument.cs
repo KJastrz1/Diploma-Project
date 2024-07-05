@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Shared.Models;
+namespace Shared.Entities;
 
 public class PatientDocument : IEntityTypeConfiguration<PatientDocument>
 {

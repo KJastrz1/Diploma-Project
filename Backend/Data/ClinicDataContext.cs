@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
-using Shared.Models;
+using Shared.Entities;
+using Backend.DataSeeder;
 
 namespace Backend.Data;
-
 public class ClinicDataContext : DbContext
 {
     public ClinicDataContext(DbContextOptions<ClinicDataContext> options)
@@ -23,14 +23,69 @@ public class ClinicDataContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
-        modelBuilder.ApplyConfiguration(new Admin());
-        modelBuilder.ApplyConfiguration(new Doctor());
-        modelBuilder.ApplyConfiguration(new Patient());
-        modelBuilder.ApplyConfiguration(new Clinic());
-        modelBuilder.ApplyConfiguration(new Appointment());
-        modelBuilder.ApplyConfiguration(new DoctorSchedule());
-        modelBuilder.ApplyConfiguration(new PatientDocument());
-        modelBuilder.ApplyConfiguration(new Vacation());
-      
-    }
-}
+        modelBuilder.Entity<Admin>(entity =>
+        {
+            entity.ToTable("Admins");
+
+            entity.HasKey(e => e.Id);
+
+            entity.Property(e => e.Name)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            entity.Property(e => e.Surname)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            entity.Property(e => e.Email)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            entity.Property(e => e.CreatedAt)
+                .IsRequired();
+
+            entity.Property(e => e.Role)
+                .IsRequired()
+                .HasConversion<string>();
+
+            entity.HasOne(a => a.AssignedBy)
+                  .WithMany()
+                  .HasForeignKey(a => a.AssignedByAdminId);
+
+            entity.Property(a => a.LastLogin);
+
+            entity.Property(a => a.IsActive)
+                  .IsRequired();
+        });
+
+        modelBuilder.Entity<Doctor>(entity =>
+        {
+            entity.ToTable("Doctors");
+
+            entity.HasKey(e => e.Id);
+
+            entity.Property(e => e.Name)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            entity.Property(e => e.Surname)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            entity.Property(e => e.Email)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            entity.Property(e => e.CreatedAt)
+                .IsRequired();
+
+            entity.Property(e => e.Role)
+                .IsRequired()
+                .HasConversion<string>();
+
+            // Dodaj dodatkowe właściwości specyficzne dla Doctor tutaj
+        });
+
+        modelBuilder.Entity<Patient>(entity =>
+        {
+            entity.ToTable("Patients"

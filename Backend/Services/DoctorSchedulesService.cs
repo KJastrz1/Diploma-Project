@@ -2,7 +2,8 @@ using AutoMapper;
 using Backend.Data;
 using Backend.Utils;
 using Microsoft.EntityFrameworkCore;
-using Shared.Models;
+using Shared.Entities;
+using Shared.Helpers;
 using Shared.Requests.DoctorSchedule;
 using Shared.Responses.DoctorSchedule;
 

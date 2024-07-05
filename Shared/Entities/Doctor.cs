@@ -1,7 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Shared.Enums;
 
-namespace Shared.Models;
+namespace Shared.Entities;
 
 public class Doctor : UserBase, IEntityTypeConfiguration<Doctor>
 {
@@ -21,27 +22,7 @@ public class Doctor : UserBase, IEntityTypeConfiguration<Doctor>
 
        public void Configure(EntityTypeBuilder<Doctor> builder)
        {
-              builder.HasKey(d => d.Id);
-
-              builder.Property(a => a.Name)
-                   .IsRequired()
-                   .HasMaxLength(100);
-
-              builder.Property(a => a.Surname)
-                   .IsRequired()
-                   .HasMaxLength(100);
-
-              builder.Property(a => a.Email)
-                   .IsRequired()
-                   .HasMaxLength(100);
-
-              builder.Property(a => a.CreatedAt)
-                     .IsRequired();
-
-              builder.Property(a => a.Role)
-                   .IsRequired()
-                   .HasConversion<string>();
-
+             
               builder.Property(d => d.MedicalLicenseNumber)
                      .IsRequired()
                      .HasMaxLength(50);

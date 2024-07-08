@@ -9,5 +9,4 @@ public class DoctorFilter
     public string? Specialty { get; set; }
     public string? OfficeNumber { get; set; }
     public Guid? ClinicId { get; set; }
-    public string? ClinicAddress { get; set; }
 }

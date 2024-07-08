@@ -1,4 +1,4 @@
-using Shared.Models;
+using Shared.Enums;
 
 namespace Shared.Responses.Patient;
 public class GetPatientResponse
@@ -10,6 +10,6 @@ public class GetPatientResponse
     public string PhoneNumber { get; set; }
     public string PESEL { get; set; }
     public DateTime DateOfBirth { get; set; }
-    public DateTime CreatedAt { get; set; }  
+    public DateTime CreatedAt { get; set; }
     public UserRole Role { get; set; }
 }

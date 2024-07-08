@@ -21,7 +21,7 @@ public class Clinic : IEntityTypeConfiguration<Clinic>
 
               builder.Property(c => c.PhoneNumber)
                      .IsRequired()
-                     .HasMaxLength(15);
+                     .HasMaxLength(30);
 
               builder.HasMany(c => c.Doctors)
                      .WithOne(d => d.Clinic)

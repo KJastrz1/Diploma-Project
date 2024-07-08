@@ -1,5 +1,5 @@
 using AutoMapper;
-using Shared.Entities;
+using Domain.Entities;
 using Shared.Requests.Patient;
 using Shared.Responses.Patient;
 using Shared.Requests.Doctor;

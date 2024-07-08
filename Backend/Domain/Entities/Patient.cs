@@ -18,7 +18,8 @@ public class Patient : UserBase, IEntityTypeConfiguration<Patient>
 
        public void Configure(EntityTypeBuilder<Patient> builder)
        {
-             
+              new UserBaseConfiguration<Patient>().Configure(builder);
+
               builder.Property(p => p.PhoneNumber)
                      .IsRequired()
                      .HasMaxLength(15);

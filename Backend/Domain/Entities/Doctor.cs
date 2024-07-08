@@ -22,7 +22,8 @@ public class Doctor : UserBase, IEntityTypeConfiguration<Doctor>
 
        public void Configure(EntityTypeBuilder<Doctor> builder)
        {
-             
+              new UserBaseConfiguration<Doctor>().Configure(builder);
+
               builder.Property(d => d.MedicalLicenseNumber)
                      .IsRequired()
                      .HasMaxLength(50);

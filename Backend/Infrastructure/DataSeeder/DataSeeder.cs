@@ -1,9 +1,9 @@
-using Microsoft.EntityFrameworkCore;
 using Shared.Entities;
 using Bogus;
+using Microsoft.EntityFrameworkCore;
+//dodac odniesienie do metody SlotFinder.FindAvailableSlots
 
-
-namespace Backend.DataSeeder;
+namespace Infrastructure.DataSeeder;
 public static class DataSeeder
 {
     public static void Seed(ModelBuilder modelBuilder)
@@ -11,9 +11,9 @@ public static class DataSeeder
         var clinics = GenerateClinics();
         var doctors = GenerateDoctors(clinics);
         var patients = GeneratePatients();
-        var appointments = GenerateAppointments(clinics, doctors, patients);
-        var vacations = GenerateVacations(doctors);
         var doctorSchedules = GenerateDoctorSchedules(doctors);
+        var vacations = GenerateVacations(doctors);
+        var appointments = GenerateAppointments(clinics, doctors, patients, doctorSchedules, vacations);
 
         modelBuilder.Entity<Clinic>().HasData(clinics);
         modelBuilder.Entity<Doctor>().HasData(doctors);
@@ -30,9 +30,19 @@ public static class DataSeeder
         var faker = new Faker<Clinic>()
             .RuleFor(c => c.Id, f => clinicIds[f.IndexFaker % clinicIds.Count])
             .RuleFor(c => c.Address, f => f.Address.StreetAddress())
-            .RuleFor(c => c.PhoneNumber, f => f.Phone.PhoneNumber());
+            .RuleFor(c => c.PhoneNumber, f => GeneratePolishPhoneNumber(f));
 
         return faker.Generate(3);
+    }
+
+    private static string GeneratePolishPhoneNumber(Faker faker)
+    {
+        return $"+48 {faker.Random.Number(100, 999)}-{faker.Random.Number(100, 999)}-{faker.Random.Number(100, 999)}";
+    }
+
+    private static string GeneratePesel(Faker faker)
+    {
+        return faker.Random.ReplaceNumbers("###########");
     }
 
     private static List<Doctor> GenerateDoctors(List<Clinic> clinics)
@@ -48,7 +58,8 @@ public static class DataSeeder
             .RuleFor(d => d.Specialty, f => f.Name.JobTitle())
             .RuleFor(d => d.OfficeNumber, f => f.Random.Number(1, 100).ToString())
             .RuleFor(d => d.ClinicId, f => f.PickRandom(clinicIds))
-            .RuleFor(d => d.CreatedAt, f => f.Date.Past());
+            .RuleFor(d => d.CreatedAt, f => f.Date.Past().ToUniversalTime());
+
 
         return faker.Generate(15);
     }
@@ -60,31 +71,54 @@ public static class DataSeeder
             .RuleFor(p => p.Name, f => f.Name.FirstName())
             .RuleFor(p => p.Surname, f => f.Name.LastName())
             .RuleFor(p => p.Email, f => f.Internet.Email())
-            .RuleFor(p => p.PhoneNumber, f => f.Phone.PhoneNumber())
-            .RuleFor(p => p.PESEL, f => f.Random.AlphaNumeric(11))
-            .RuleFor(p => p.DateOfBirth, f => f.Date.Past(50, DateTime.Today.AddYears(-18)))
-            .RuleFor(p => p.CreatedAt, f => f.Date.Past());
+            .RuleFor(p => p.PhoneNumber, f => GeneratePolishPhoneNumber(f))
+            .RuleFor(p => p.PESEL, f => GeneratePesel(f))
+            .RuleFor(p => p.DateOfBirth, f => f.Date.Past(50, DateTime.Today.AddYears(-18)).ToUniversalTime())
+            .RuleFor(p => p.CreatedAt, f => f.Date.Past().ToUniversalTime());
 
         return faker.Generate(10);
     }
 
-    private static List<Appointment> GenerateAppointments(List<Clinic> clinics, List<Doctor> doctors, List<Patient> patients)
+    private static List<Appointment> GenerateAppointments(List<Clinic> clinics, List<Doctor> doctors, List<Patient> patients, List<DoctorSchedule> doctorSchedules, List<Vacation> vacations)
     {
         var clinicIds = clinics.ConvertAll(c => c.Id);
         var doctorIds = doctors.ConvertAll(d => d.Id);
         var patientIds = patients.ConvertAll(p => p.Id);
 
-        var faker = new Faker<Appointment>()
-            .RuleFor(a => a.Id, f => Guid.NewGuid())
-            .RuleFor(a => a.ClinicId, f => f.PickRandom(clinicIds))
-            .RuleFor(a => a.DoctorId, f => f.PickRandom(doctorIds))
-            .RuleFor(a => a.PatientId, f => f.PickRandom(patientIds))
-            .RuleFor(a => a.AppointmentDate, f => f.Date.Future())
-            .RuleFor(a => a.EndDate, (f, a) => a.AppointmentDate.AddHours(1))
-            .RuleFor(a => a.CreatedAt, f => f.Date.Past())
-            .RuleFor(a => a.Notes, f => f.Lorem.Sentence());
+        var appointments = new List<Appointment>();
+        var faker = new Faker();
 
-        return faker.Generate(20);
+        foreach (var doctor in doctors)
+        {
+            var schedulesForDoctor = doctorSchedules.Where(ds => ds.DoctorId == doctor.Id).ToList();
+            var vacationsForDoctor = vacations.Where(v => v.DoctorId == doctor.Id).ToList();
+            var startDate = DateTime.UtcNow;
+            var endDate = DateTime.UtcNow.AddMonths(1);
+
+            var availableSlots = SlotFinder.FindAvailableSlots(schedulesForDoctor, new List<Appointment>(), vacationsForDoctor, startDate, endDate);
+
+            foreach (var slot in availableSlots)
+            {
+                if (faker.Random.Bool(0.5f))
+                {
+                    var appointment = new Appointment
+                    {
+                        Id = Guid.NewGuid(),
+                        ClinicId = faker.PickRandom(clinicIds),
+                        DoctorId = doctor.Id,
+                        PatientId = faker.PickRandom(patientIds),
+                        AppointmentDate = slot.StartTime,
+                        EndDate = slot.EndTime,
+                        CreatedAt = faker.Date.Past().ToUniversalTime(),
+                        Notes = faker.Lorem.Sentence()
+                    };
+
+                    appointments.Add(appointment);
+                }
+            }
+        }
+
+        return appointments;
     }
 
     private static List<Vacation> GenerateVacations(List<Doctor> doctors)
@@ -94,22 +128,24 @@ public static class DataSeeder
         var faker = new Faker<Vacation>()
             .RuleFor(v => v.Id, f => Guid.NewGuid())
             .RuleFor(v => v.DoctorId, f => f.PickRandom(doctorIds))
-            .RuleFor(v => v.StartDate, f => f.Date.Future(1))
-            .RuleFor(v => v.EndDate, (f, v) => v.StartDate.AddDays(7))
+            .RuleFor(v => v.StartDate, f => f.Date.Future(1).ToUniversalTime())
+            .RuleFor(v => v.EndDate, (f, v) => v.StartDate.AddDays(7).ToUniversalTime())
             .RuleFor(v => v.IsApproved, f => f.Random.Bool())
             .RuleFor(v => v.IsDenied, (f, v) => !v.IsApproved)
-            .RuleFor(v => v.CreatedAt, f => f.Date.Past());
+            .RuleFor(v => v.CreatedAt, f => f.Date.Past().ToUniversalTime());
 
         return faker.Generate(10);
     }
 
     private static List<DoctorSchedule> GenerateDoctorSchedules(List<Doctor> doctors)
     {
+        var faker = new Faker();
         var schedules = new List<DoctorSchedule>();
 
         foreach (var doctor in doctors)
         {
-            for (var day = DayOfWeek.Monday; day <= DayOfWeek.Friday; day++)
+            var daysOfWeek = faker.Random.EnumValues<DayOfWeek>(faker.Random.Int(1, 5)).ToList();
+            foreach (var day in daysOfWeek)
             {
                 schedules.Add(new DoctorSchedule
                 {
@@ -126,3 +162,4 @@ public static class DataSeeder
         return schedules;
     }
 }
+
